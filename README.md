@@ -7,9 +7,9 @@
 
 ## 📖 About The Project
 
-This isn't just a To-Do list; it's a dedicated space designed specifically for you to manage your day-to-day life, track your goals, and keep everything organized in one cute place.
+This isn't just a To-Do list; it's a dedicated space designed specifically for the love of my life to manage her day-to-day life, track her goals, and keep everything organized in one cute place.
 
-Whether it's school deadlines, work tasks, or just remembering to drink water, this dashboard has got your back.
+Whether it's school deadlines, work tasks, or just remembering to drink water, this dashboard has got her back.
 
 ## ✨ Features
 
@@ -19,11 +19,11 @@ Whether it's school deadlines, work tasks, or just remembering to drink water, t
 - **Daily Overview**: A clean snapshot of what you need to focus on today.
 
 ### 🚀 Upcoming Features (The Roadmap)
-- [ ] **Journal/Diary**: A private space to write down your thoughts, rants, or happy moments.
-- [ ] **Period & Cycle Tracker**: Predicts your next cycle and tracks symptoms.
-- [ ] **Mood Tracker**: Log how you're feeling to see patterns over time.
-- [ ] **"Notes from Jasmine"**: A widget where I can leave you sticky notes and messages.
-- [ ] **Dark Mode**: Because we care about your eyes. 🌙
+- [ ] **Journal/Diary**: A private space to write down her thoughts, rants, or happy moments.
+- [ ] **Period & Cycle Tracker**: Predicts her next cycle and tracks symptoms.
+- [ ] **Mood Tracker**: Log how she's feeling to see patterns over time.
+- [ ] **"Notes from Jasmine"**: A widget where I can leave her sticky notes and messages.
+- [ ] **Dark Mode**: Because I care about her eyes. 🌙
 
 ## 🛠️ Tech Stack (Under the Hood)
 
@@ -38,7 +38,7 @@ This project is built using a modern, robust stack to ensure it runs smoothly.
 
 ## 🏁 Getting Started
 
-If you want to run this locally on your machine (or if llegaspo hehe is setting it up for you), follow these steps.
+If you want to run this locally on your machine, follow these steps.
 
 ### Prerequisites
 * Node.js installed
@@ -94,7 +94,7 @@ We follow a strict (but loving) contribution policy:
 
 ## 💌 Personal Note
 
-I built this because I know how busy you get in school, and I wanted to make your life atleast a bit easier. I hope this helps you achieve your goals!
+I built this because I know how busy she get in school, and I wanted to make her life atleast a bit easier. I hope this helps her achieve her goals!
 
 Love,
 **llegaspo**
