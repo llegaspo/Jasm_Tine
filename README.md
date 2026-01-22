@@ -1,4 +1,4 @@
-# 🎀 The Jasmine Dashboard
+# 🎀 Jasm_Tine (read as Jas-em-Tayn or Just in time)
 
 > A personalized, all-in-one life tracker built with ❤️ for Jasmine.
 
