@@ -13,7 +13,7 @@ Whether it's school deadlines, work tasks, or just remembering to drink water, t
 
 ## ✨ Features
 
-### ✅ Current Features
+### ⏳ Ongoing Development
 - **Smart Deadline Tracker**: See exactly how many days are left until a deadline (no more mental math!).
 - **Priority To-Do List**: Drag and drop tasks based on urgency.
 - **Daily Overview**: A clean snapshot of what you need to focus on today.
