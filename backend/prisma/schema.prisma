@@ -12,3 +12,38 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id        String @id @default(cuid())
+  email     String @unique
+  timezone  String
+}
+
+enum STATUS {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+model Task {
+  id                String @id @default(cuid())
+  user_id           String
+  title             String
+  status            STATUS
+  priority_level    Int
+  sort_order        Float
+  due_date          DateTime  @db.Timestamptz()
+  scheduled_date    DateTime  @db.Timestamptz()
+  created_at        DateTime  @db.Timestamptz()
+
+  user              User @relation(fields:[user_id], references: [id], onDelete:Cascade)
+}
+
+model Day_Summary{
+  user_id         String  @id
+  date            DateTime @db.Timestamptz()
+  total_tasks     Int
+  completed_task  Int
+
+  user            User @relation(fields:[user_id],references:[id],onDelete:Cascade)
+}
