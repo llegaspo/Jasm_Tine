@@ -17,6 +17,9 @@ model User {
   id        String @id @default(cuid())
   email     String @unique
   timezone  String
+
+  tasks     Task[]
+  summaries Day_Summary[]
 }
 
 enum STATUS {
@@ -31,19 +34,24 @@ model Task {
   title             String
   status            STATUS
   priority_level    Int
-  sort_order        Float
-  due_date          DateTime  @db.Timestamptz()
-  scheduled_date    DateTime  @db.Timestamptz()
-  created_at        DateTime  @db.Timestamptz()
+  sort_order        Decimal
+  due_date          DateTime?  @db.Timestamptz()
+  scheduled_date    DateTime?  @db.Date()
+  created_at        DateTime  @default(now()) @db.Timestamptz()
+  updated_at        DateTime  @updatedAt  @db.Timestamptz()
 
   user              User @relation(fields:[user_id], references: [id], onDelete:Cascade)
 }
 
 model Day_Summary{
-  user_id         String  @id
-  date            DateTime @db.Timestamptz()
-  total_tasks     Int
-  completed_task  Int
+  user_id         String
+  date            DateTime @db.Date()
+  total_tasks     Int     @default(0)
+  completed_task  Int     @default(0)
 
   user            User @relation(fields:[user_id],references:[id],onDelete:Cascade)
+
+  @@id([user_id, date])
 }
+
+
