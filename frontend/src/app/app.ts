@@ -1,12 +1,23 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+
+interface NavigationItem {
+  readonly label: string;
+  readonly icon: string;
+  readonly route: string;
+}
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App {
-  protected readonly title = signal('frontend');
+  protected readonly navigationItems: readonly NavigationItem[] = [
+    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
+    { label: 'Wellness', icon: 'spa', route: '/wellness' },
+    { label: 'Pomodoro', icon: 'timer', route: '/pomodoro' },
+    { label: 'Settings', icon: 'settings', route: '/settings' },
+  ];
 }

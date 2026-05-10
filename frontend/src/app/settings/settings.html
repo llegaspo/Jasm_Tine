@@ -1,0 +1,92 @@
+<div class="settings-content">
+  <header class="settings-header">
+    <h1>Account Settings</h1>
+    <p>Manage your profile details, notification preferences, and account security in one elegant space.</p>
+  </header>
+
+  <div class="settings-stack">
+    <section class="settings-card settings-card--profile glass-card" aria-labelledby="profile-heading">
+      <span class="settings-card__glow" aria-hidden="true"></span>
+
+      <h2 id="profile-heading">Profile Information</h2>
+
+      <div class="profile-settings">
+        <div class="avatar-settings">
+          <button class="avatar-upload" type="button" aria-label="Change profile photo">
+            <img [src]="avatarUrl" alt="Current profile portrait" width="128" height="128" />
+            <span>
+              <span class="material-symbols-outlined" aria-hidden="true">photo_camera</span>
+            </span>
+          </button>
+
+          <div class="avatar-actions">
+            <button type="button">Change</button>
+            <button type="button">Remove</button>
+          </div>
+        </div>
+
+        <form class="settings-form" aria-label="Profile information">
+          <div class="settings-form__grid">
+            @for (field of profileFields; track field.id) {
+              <label class="field" [class.field--full]="field.id === 'email'">
+                <span>{{ field.label }}</span>
+                <input [id]="field.id" [type]="field.type" [value]="field.value" />
+              </label>
+            }
+          </div>
+
+          <label class="field field--full">
+            <span>Bio</span>
+            <textarea rows="3">{{ bio }}</textarea>
+          </label>
+
+          <div class="settings-form__actions">
+            <button class="soft-action" type="button">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="settings-card glass-card" aria-labelledby="notifications-heading">
+      <h2 id="notifications-heading">Notification Preferences</h2>
+
+      <ul class="preference-list">
+        @for (preference of notificationPreferences; track preference.title) {
+          <li class="preference-item">
+            <div>
+              <h3>{{ preference.title }}</h3>
+              <p>{{ preference.description }}</p>
+            </div>
+
+            <button
+              class="toggle"
+              type="button"
+              [class.toggle--on]="preference.enabled"
+              [disabled]="preference.locked"
+              [attr.aria-pressed]="preference.enabled"
+              [attr.aria-label]="preference.title"
+            >
+              <span></span>
+            </button>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="danger-card" aria-labelledby="danger-heading">
+      <h2 id="danger-heading">Danger Zone</h2>
+
+      <div class="danger-card__content">
+        <div>
+          <h3>Delete Account</h3>
+          <p>
+            Once you delete your account, there is no going back. Please be certain. All data will
+            be permanently removed.
+          </p>
+        </div>
+
+        <button class="danger-action" type="button">Delete Account</button>
+      </div>
+    </section>
+  </div>
+</div>

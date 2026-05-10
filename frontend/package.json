@@ -21,7 +21,6 @@
     ]
   },
   "private": true,
-  "packageManager": "npm@10.9.4",
   "dependencies": {
     "@angular/common": "^21.1.0",
     "@angular/compiler": "^21.1.0",
@@ -44,3 +43,4 @@
     "vitest": "^4.0.8"
   }
 }
+

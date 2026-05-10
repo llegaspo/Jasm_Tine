@@ -2,7 +2,11 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": false,
+    "cache": {
+      "enabled": false
+    }
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -26,7 +30,14 @@
             ],
             "styles": [
               "src/styles.css"
-            ]
+            ],
+            "optimization": {
+              "scripts": true,
+              "styles": true,
+              "fonts": {
+                "inline": false
+              }
+            }
           },
           "configurations": {
             "production": {

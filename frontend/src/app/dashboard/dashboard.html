@@ -1,0 +1,136 @@
+<div class="dashboard-content">
+  <section class="hero-card glass-card" aria-labelledby="dashboard-greeting">
+    <div class="hero-card__content">
+      <h1 id="dashboard-greeting">{{ greeting() }}</h1>
+      <p>Let's cultivate a productive and peaceful day.</p>
+
+      <div class="focus-chip" role="status">
+        <span class="material-symbols-outlined" aria-hidden="true">lightbulb</span>
+        <span>Today's Focus: {{ currentFocus() }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="dashboard-grid" aria-label="Dashboard overview">
+    <div class="dashboard-grid__primary">
+      <section class="panel glass-card" aria-labelledby="priority-tasks-heading">
+        <header class="panel__header">
+          <h2 id="priority-tasks-heading">Priority Tasks</h2>
+          <button class="icon-button icon-button--soft" type="button" aria-label="Add priority task">
+            <span class="material-symbols-outlined" aria-hidden="true">add</span>
+          </button>
+        </header>
+
+        <ul class="task-list" aria-label="Priority tasks">
+          @for (task of priorityTasks; track task.id) {
+            <li class="task-item" [class.task-item--completed]="task.completed">
+              <button class="drag-handle" type="button" aria-label="Reorder task">
+                <span class="material-symbols-outlined" aria-hidden="true">drag_indicator</span>
+              </button>
+
+              <button
+                class="task-check"
+                type="button"
+                [class.task-check--checked]="task.completed"
+                [attr.aria-pressed]="task.completed"
+                [attr.aria-label]="task.completed ? 'Mark task incomplete' : 'Mark task complete'"
+              >
+                @if (task.completed) {
+                  <span class="material-symbols-outlined" aria-hidden="true">check</span>
+                }
+              </button>
+
+              <span class="task-title">{{ task.title }}</span>
+
+              @if (task.badge) {
+                <span
+                  class="task-badge"
+                  [class.task-badge--urgent]="task.badge.tone === 'urgent'"
+                  [class.task-badge--high]="task.badge.tone === 'high'"
+                >
+                  {{ task.badge.label }}
+                </span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="panel glass-card" aria-labelledby="roadmap-heading">
+        <header class="panel__header panel__header--plain">
+          <h2 id="roadmap-heading">Upcoming Features Roadmap</h2>
+        </header>
+
+        <ul class="roadmap-list" aria-label="Upcoming features roadmap">
+          @for (feature of roadmapFeatures; track feature.name) {
+            <li
+              class="roadmap-card"
+              [class.roadmap-card--primary]="feature.tone === 'primary'"
+              [class.roadmap-card--secondary]="feature.tone === 'secondary'"
+              [class.roadmap-card--tertiary]="feature.tone === 'tertiary'"
+            >
+              <span class="roadmap-card__accent" aria-hidden="true"></span>
+              <span class="material-symbols-outlined roadmap-card__icon" aria-hidden="true">
+                {{ feature.icon }}
+              </span>
+              <h3>{{ feature.name }}</h3>
+
+              <div
+                class="progress"
+                role="progressbar"
+                [attr.aria-valuenow]="feature.progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                [attr.aria-label]="feature.name + ' progress'"
+              >
+                <span [style.width.%]="feature.progress"></span>
+              </div>
+
+              <p>{{ feature.progress }}%</p>
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <div class="dashboard-grid__secondary">
+      <section class="panel milestone-panel glass-card" aria-labelledby="milestones-heading">
+        <header class="panel__header panel__header--compact">
+          <span class="material-symbols-outlined panel__icon" aria-hidden="true">hourglass_top</span>
+          <h2 id="milestones-heading">Key Milestones</h2>
+        </header>
+
+        <ul class="milestone-list">
+          @for (milestone of milestones; track milestone.name) {
+            <li
+              class="milestone-card"
+              [class.milestone-card--primary]="milestone.tone === 'primary'"
+              [class.milestone-card--tertiary]="milestone.tone === 'tertiary'"
+            >
+              <h3>{{ milestone.name }}</h3>
+              <div>
+                <strong>{{ milestone.daysLeft }}</strong>
+                <span>{{ milestone.daysLeft === 1 ? 'Day Left' : 'Days Left' }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="notes-card" aria-labelledby="notes-heading">
+        <span class="notes-card__pin" aria-hidden="true"></span>
+        <h2 id="notes-heading">Notes to Self</h2>
+
+        <ul class="notes-list">
+          @for (note of notes; track note.id) {
+            <li>{{ note.text }}</li>
+          }
+        </ul>
+
+        <button class="icon-button icon-button--note" type="button" aria-label="Edit notes">
+          <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+        </button>
+      </section>
+    </div>
+  </section>
+</div>

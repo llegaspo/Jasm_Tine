@@ -1,0 +1,136 @@
+<div class="pomodoro-content">
+  <header class="pomodoro-header">
+    <div>
+      <h1>Focus Session</h1>
+      <p>Cultivate attention with a focused timer, gentle breaks, and calm atmosphere.</p>
+    </div>
+
+    <div class="pomodoro-summary" role="status">
+      <span class="material-symbols-outlined" aria-hidden="true">emoji_events</span>
+      <span>{{ completedFocusSessions() }} completed today</span>
+    </div>
+  </header>
+
+  <section class="focus-task-card glass-card" aria-labelledby="focus-task-heading">
+    <span class="material-symbols-outlined focus-task-card__icon" aria-hidden="true">edit_note</span>
+
+    <label class="focus-task-field" for="focus-task">
+      <span id="focus-task-heading">Focus Task</span>
+      <input
+        id="focus-task"
+        type="text"
+        [value]="focusTask()"
+        (input)="setFocusTask($event)"
+        placeholder="What are we nurturing today?"
+      />
+    </label>
+  </section>
+
+  <section class="pomodoro-grid" aria-label="Pomodoro workspace">
+    <section class="timer-panel glass-card" aria-labelledby="timer-heading">
+      <div class="timer-panel__bloom" aria-hidden="true"></div>
+
+      <div class="timer-modes" role="group" aria-label="Timer mode">
+        @for (mode of modes; track mode.id) {
+          <button
+            type="button"
+            [class.timer-mode--active]="currentMode() === mode.id"
+            [attr.aria-pressed]="currentMode() === mode.id"
+            (click)="selectMode(mode.id)"
+          >
+            {{ mode.label }}
+          </button>
+        }
+      </div>
+
+      <div class="timer-ring" aria-live="polite">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="timer-ring__track" cx="50" cy="50" r="46"></circle>
+          <circle
+            class="timer-ring__progress"
+            cx="50"
+            cy="50"
+            r="46"
+            [attr.stroke-dashoffset]="progressOffset()"
+          ></circle>
+        </svg>
+
+        <div class="timer-ring__content">
+          <h2 id="timer-heading">{{ timerLabel() }}</h2>
+          <p>{{ activeMode().label }}</p>
+          <span>{{ sessionStatus() }}</span>
+        </div>
+      </div>
+
+      <div class="timer-controls" aria-label="Timer controls">
+        <button class="timer-control" type="button" aria-label="Reset timer" (click)="resetTimer()">
+          <span class="material-symbols-outlined" aria-hidden="true">replay</span>
+        </button>
+
+        <button
+          class="timer-control timer-control--primary"
+          type="button"
+          [attr.aria-label]="isRunning() ? 'Pause timer' : 'Start timer'"
+          (click)="toggleTimer()"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">
+            {{ isRunning() ? 'pause' : 'play_arrow' }}
+          </span>
+        </button>
+
+        <button class="timer-control" type="button" aria-label="Skip session" (click)="skipTimer()">
+          <span class="material-symbols-outlined" aria-hidden="true">skip_next</span>
+        </button>
+      </div>
+    </section>
+
+    <aside class="pomodoro-sidebar" aria-label="Focus support panels">
+      <section class="support-panel glass-card" aria-labelledby="atmosphere-heading">
+        <header class="support-panel__header">
+          <h2 id="atmosphere-heading">Atmosphere</h2>
+          <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+        </header>
+
+        <div class="atmosphere-list">
+          @for (atmosphere of atmospheres; track atmosphere.label) {
+            <button
+              class="atmosphere-option"
+              type="button"
+              [class.atmosphere-option--active]="selectedAtmosphere() === atmosphere.label"
+              [attr.aria-pressed]="selectedAtmosphere() === atmosphere.label"
+              (click)="selectAtmosphere(atmosphere.label)"
+            >
+              <span class="atmosphere-option__icon">
+                <span class="material-symbols-outlined" aria-hidden="true">{{ atmosphere.icon }}</span>
+              </span>
+              <span>{{ atmosphere.label }}</span>
+              @if (selectedAtmosphere() === atmosphere.label) {
+                <span class="material-symbols-outlined atmosphere-option__volume" aria-hidden="true">
+                  volume_up
+                </span>
+              }
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="support-panel glass-card" aria-labelledby="history-heading">
+        <header class="support-panel__header">
+          <h2 id="history-heading">Today's Journey</h2>
+        </header>
+
+        <ol class="session-timeline">
+          @for (session of sessionHistory(); track session.id) {
+            <li>
+              <span class="session-timeline__dot" aria-hidden="true"></span>
+              <strong>{{ session.title }}</strong>
+              <span>{{ session.meta }}</span>
+            </li>
+          }
+        </ol>
+
+        <button class="soft-action support-panel__action" type="button">View Full History</button>
+      </section>
+    </aside>
+  </section>
+</div>

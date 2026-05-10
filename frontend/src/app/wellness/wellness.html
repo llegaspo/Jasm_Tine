@@ -1,0 +1,153 @@
+<div class="wellness-content">
+  <header class="wellness-header">
+    <div>
+      <h1>Journal & Wellness</h1>
+      <p>Your private space for reflection and balance.</p>
+    </div>
+
+    <time class="date-pill" datetime="2023-10-24">
+      <span class="material-symbols-outlined" aria-hidden="true">calendar_today</span>
+      {{ journalDate() }}
+    </time>
+  </header>
+
+  <section class="wellness-grid" aria-label="Journal and wellness overview">
+    <section class="journal-panel glass-card" aria-labelledby="journal-heading">
+      <header class="panel__header">
+        <h2 id="journal-heading">
+          <span class="material-symbols-outlined" aria-hidden="true">edit_note</span>
+          Daily Reflections
+        </h2>
+
+        <button class="icon-button icon-button--soft" type="button" aria-label="Open journal actions">
+          <span class="material-symbols-outlined" aria-hidden="true">more_horiz</span>
+        </button>
+      </header>
+
+      <label class="journal-editor">
+        <span class="sr-only">Daily reflection entry</span>
+        <textarea
+          [value]="journalDraft()"
+          placeholder="Dear Diary, today felt like..."
+          aria-label="Daily reflection entry"
+        ></textarea>
+      </label>
+
+      <footer class="journal-actions">
+        <div class="journal-tools" aria-label="Journal attachments">
+          <button class="icon-button icon-button--surface" type="button" aria-label="Attach image">
+            <span class="material-symbols-outlined" aria-hidden="true">image</span>
+          </button>
+
+          <button class="icon-button icon-button--surface" type="button" aria-label="Record voice note">
+            <span class="material-symbols-outlined" aria-hidden="true">mic</span>
+          </button>
+        </div>
+
+        <button class="primary-action primary-action--inline" type="button">Save Entry</button>
+      </footer>
+    </section>
+
+    <div class="wellness-sidebar">
+      <section class="jasmine-note-card" aria-labelledby="jasmine-note-heading">
+        <div class="jasmine-note-card__glow" aria-hidden="true"></div>
+
+        <img
+          [src]="jasmineNote.avatarUrl"
+          alt="Jasmine wellness guide portrait"
+          width="48"
+          height="48"
+        />
+
+        <div>
+          <h2 id="jasmine-note-heading">{{ jasmineNote.author }}</h2>
+          <p>{{ jasmineNote.message }}</p>
+        </div>
+      </section>
+
+      <section class="cycle-card glass-card" aria-labelledby="cycle-heading">
+        <h2 id="cycle-heading">
+          <span class="material-symbols-outlined" aria-hidden="true">water_drop</span>
+          Cycle Insights
+        </h2>
+
+        <div class="cycle-ring" aria-label="Cycle day 14, ovulation phase">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="45"></circle>
+            <circle cx="50" cy="50" r="45"></circle>
+          </svg>
+          <div>
+            <strong>Day 14</strong>
+            <span>Ovulation</span>
+          </div>
+        </div>
+
+        <div class="symptom-area">
+          <button class="symptom-log" type="button">
+            <span>Log Symptoms</span>
+            <span class="material-symbols-outlined" aria-hidden="true">add_circle</span>
+          </button>
+
+          <ul class="symptom-tags" aria-label="Logged symptoms">
+            @for (symptom of symptoms; track symptom.label) {
+              <li>{{ symptom.label }}</li>
+            }
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="mood-panel glass-card" aria-labelledby="mood-heading">
+      <header class="panel__header mood-panel__header">
+        <h2 id="mood-heading">Mood Patterns</h2>
+
+        <label class="range-select">
+          <span class="sr-only">Mood pattern date range</span>
+          <select aria-label="Mood pattern date range">
+            <option>This Week</option>
+            <option>This Month</option>
+          </select>
+        </label>
+      </header>
+
+      <div class="mood-checkin">
+        <p>How are you today?</p>
+
+        <div class="mood-options" role="group" aria-label="Log today's mood">
+          @for (mood of moodOptions; track mood.label) {
+            <button
+              class="mood-option"
+              type="button"
+              [class.mood-option--selected]="mood.selected"
+              [attr.aria-pressed]="mood.selected ? 'true' : 'false'"
+              [attr.aria-label]="mood.label"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true">{{ mood.icon }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <section class="mood-overview" aria-labelledby="weekly-overview-heading">
+        <h3 id="weekly-overview-heading">Weekly Overview</h3>
+
+        <ul class="mood-bars">
+          @for (pattern of moodPatterns; track $index) {
+            <li
+              class="mood-bar"
+              [class.mood-bar--primary]="pattern.tone === 'primary'"
+              [class.mood-bar--secondary]="pattern.tone === 'secondary'"
+              [class.mood-bar--tertiary]="pattern.tone === 'tertiary'"
+              [class.mood-bar--surface]="pattern.tone === 'surface'"
+              [class.mood-bar--active]="pattern.active"
+              [class.mood-bar--projected]="pattern.projected"
+            >
+              <span class="mood-bar__fill" [style.height.%]="pattern.intensity"></span>
+              <span class="mood-bar__day">{{ pattern.day }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    </section>
+  </section>
+</div>
