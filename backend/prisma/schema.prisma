@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   // output   = "../generated/prisma"
@@ -14,14 +11,40 @@ datasource db {
 }
 
 model User {
-  id         String @id @default(cuid())
-  first_name String
-  last_name  String
-  email      String @unique
-  timezone   String
+  id        String @id @default(cuid())
+  firstName String @map("first_name")
+  lastName  String @map("last_name")
+  email     String @unique
+  timezone  String
 
-  tasks     Task[]
-  summaries Day_Summary[]
+  profile                 UserProfile?
+  tasks                   Task[]
+  daySummaries            DaySummary[]
+  stickyNotes             StickyNote[]
+  milestones              Milestone[]
+  reminders               Reminder[]
+  reminderLogs            ReminderLog[]
+  journalEntries          JournalEntry[]
+  moodLogs                MoodLog[]
+  cycleEntries            CycleEntry[]
+  symptomLogs             SymptomLog[]
+  pomodoroSessions        PomodoroSession[]
+  notificationPreferences NotificationPreference[]
+}
+
+model UserProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique @map("user_id")
+  displayName  String?  @map("display_name")
+  bio          String?
+  avatarUrl    String?  @map("avatar_url")
+  currentFocus String?  @map("current_focus")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum STATUS {
@@ -31,27 +54,257 @@ enum STATUS {
 }
 
 model Task {
-  id             String    @id @default(cuid())
-  user_id        String
-  title          String
-  status         STATUS
-  priority_level Int
-  sort_order     Decimal
-  due_date       DateTime? @db.Timestamptz()
-  scheduled_date DateTime? @db.Date()
-  created_at     DateTime  @default(now()) @db.Timestamptz()
-  updated_at     DateTime  @updatedAt @db.Timestamptz()
+  id            String    @id @default(cuid())
+  userId        String    @map("user_id")
+  title         String
+  description   String?
+  status        STATUS    @default(TODO)
+  completedAt   DateTime? @map("completed_at") @db.Timestamptz()
+  priority      Int?      @map("priority_level")
+  category      String?
+  tags          String[]  @default([])
+  sortOrder     Decimal   @default(0) @map("sort_order")
+  dueDate       DateTime? @map("due_date") @db.Timestamptz()
+  scheduledDate DateTime? @map("scheduled_date") @db.Date()
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, dueDate])
+  @@index([userId, scheduledDate])
+  @@index([userId, sortOrder])
+  @@index([userId, createdAt])
 }
 
-model Day_Summary {
-  user_id        String
-  date           DateTime @db.Date()
-  total_tasks    Int      @default(0)
-  completed_task Int      @default(0)
+model DaySummary {
+  userId        String   @map("user_id")
+  date          DateTime @db.Date()
+  totalTasks    Int      @default(0) @map("total_tasks")
+  completedTask Int      @default(0) @map("completed_task")
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([user_id, date])
+  @@id([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("Day_Summary")
+}
+
+model StickyNote {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  text      String
+  tone      String?
+  color     String?
+  sortOrder Decimal  @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, sortOrder])
+  @@index([userId, createdAt])
+}
+
+model Milestone {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  name        String
+  description String?
+  dueDate     DateTime  @map("due_date") @db.Date()
+  tone        String?
+  category    String?
+  completedAt DateTime? @map("completed_at") @db.Timestamptz()
+  sortOrder   Decimal   @default(0) @map("sort_order")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, dueDate])
+  @@index([userId, sortOrder])
+  @@index([userId, createdAt])
+}
+
+enum REMINDER_CADENCE {
+  DAILY
+  WEEKLY
+  CUSTOM
+}
+
+model Reminder {
+  id          String           @id @default(cuid())
+  userId      String           @map("user_id")
+  title       String
+  description String?
+  icon        String?
+  actionLabel String?          @map("action_label")
+  actionIcon  String?          @map("action_icon")
+  tone        String?
+  cadence     REMINDER_CADENCE @default(DAILY)
+  isActive    Boolean          @default(true) @map("is_active")
+  sortOrder   Decimal          @default(0) @map("sort_order")
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs ReminderLog[]
+
+  @@index([userId])
+  @@index([userId, isActive])
+  @@index([userId, sortOrder])
+  @@index([userId, createdAt])
+}
+
+model ReminderLog {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  reminderId  String    @map("reminder_id")
+  date        DateTime  @db.Date()
+  amount      Int?
+  unit        String?
+  completedAt DateTime? @map("completed_at") @db.Timestamptz()
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reminder Reminder @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+
+  @@unique([reminderId, date])
+  @@index([userId])
+  @@index([userId, date])
+  @@index([userId, createdAt])
+}
+
+model JournalEntry {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  entryDate DateTime @map("entry_date") @db.Date()
+  title     String
+  content   String
+  excerpt   String?
+  moodLabel String?  @map("mood_label")
+  moodIcon  String?  @map("mood_icon")
+  imageUrl  String?  @map("image_url")
+  featured  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, entryDate])
+  @@index([userId])
+  @@index([userId, entryDate])
+  @@index([userId, createdAt])
+}
+
+model MoodLog {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  date      DateTime @db.Date()
+  moodLabel String   @map("mood_label")
+  moodIcon  String?  @map("mood_icon")
+  intensity Int
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([userId, date])
+  @@index([userId, createdAt])
+}
+
+model CycleEntry {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  startDate DateTime  @map("start_date") @db.Date()
+  endDate   DateTime? @map("end_date") @db.Date()
+  cycleDay  Int?      @map("cycle_day")
+  phase     String?
+  flow      String?
+  note      String?
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symptomLogs SymptomLog[]
+
+  @@index([userId])
+  @@index([userId, startDate])
+  @@index([userId, endDate])
+  @@index([userId, createdAt])
+}
+
+model SymptomLog {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  cycleEntryId String?  @map("cycle_entry_id")
+  date         DateTime @db.Date()
+  symptom      String
+  severity     Int?
+  note         String?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cycleEntry CycleEntry? @relation(fields: [cycleEntryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, date])
+  @@index([cycleEntryId])
+  @@index([userId, createdAt])
+}
+
+enum POMODORO_MODE {
+  FOCUS
+  SHORT_BREAK
+  LONG_BREAK
+}
+
+model PomodoroSession {
+  id              String        @id @default(cuid())
+  userId          String        @map("user_id")
+  title           String
+  mode            POMODORO_MODE @default(FOCUS)
+  durationMinutes Int           @map("duration_minutes")
+  completed       Boolean       @default(true)
+  atmosphere      String?
+  startedAt       DateTime?     @map("started_at") @db.Timestamptz()
+  endedAt         DateTime?     @map("ended_at") @db.Timestamptz()
+  completedAt     DateTime?     @map("completed_at") @db.Timestamptz()
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, completedAt])
+  @@index([userId, startedAt])
+  @@index([userId, createdAt])
+}
+
+model NotificationPreference {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  key         String
+  title       String
+  description String?
+  enabled     Boolean  @default(true)
+  locked      Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
+  @@index([userId])
+  @@index([userId, createdAt])
 }

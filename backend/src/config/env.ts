@@ -29,9 +29,9 @@ export const appEnv = Object.freeze({
 });
 
 export const defaultSeedUser = Object.freeze({
-  first_name:
+  firstName:
     process.env.DEFAULT_USER_FIRST_NAME?.trim() || DEFAULT_USER_FIRST_NAME,
-  last_name:
+  lastName:
     process.env.DEFAULT_USER_LAST_NAME?.trim() || DEFAULT_USER_LAST_NAME,
   email: process.env.DEFAULT_USER_EMAIL?.trim() || DEFAULT_USER_EMAIL,
   timezone: process.env.DEFAULT_USER_TIMEZONE?.trim() || DEFAULT_USER_TIMEZONE,
