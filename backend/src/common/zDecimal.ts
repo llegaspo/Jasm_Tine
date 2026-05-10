@@ -1,8 +1,7 @@
 import { z } from 'zod';
-import { Prisma } from '../../generated/prisma/client';
+import { Prisma } from '@prisma/client';
 
 export const zDecimal = () =>
-  // 2. Use 'Prisma.Decimal' here
   z
     .union([z.string(), z.number(), z.instanceof(Prisma.Decimal)])
     .refine(

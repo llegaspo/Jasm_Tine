@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { JournalService } from './journal.service';
 import { CreateJournalDto } from './dto/create-journal.dto';
 import { UpdateJournalDto } from './dto/update-journal.dto';
@@ -19,16 +27,16 @@ export class JournalController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.journalService.findOne(+id);
+    return this.journalService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateJournalDto: UpdateJournalDto) {
-    return this.journalService.update(+id, updateJournalDto);
+    return this.journalService.update(id, updateJournalDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.journalService.remove(+id);
+    return this.journalService.remove(id);
   }
 }

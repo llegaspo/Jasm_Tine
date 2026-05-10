@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { MoodService } from './mood.service';
 import { CreateMoodDto } from './dto/create-mood.dto';
 import { UpdateMoodDto } from './dto/update-mood.dto';
@@ -19,16 +27,16 @@ export class MoodController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.moodService.findOne(+id);
+    return this.moodService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMoodDto: UpdateMoodDto) {
-    return this.moodService.update(+id, updateMoodDto);
+    return this.moodService.update(id, updateMoodDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.moodService.remove(+id);
+    return this.moodService.remove(id);
   }
 }

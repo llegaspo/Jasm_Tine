@@ -159,6 +159,9 @@ img {
 .primary-action:focus-visible,
 .task-check:focus-visible,
 .drag-handle:focus-visible,
+.finished-tasks-button:focus-visible,
+.finished-tasks-modal__footer button:focus-visible,
+.daily-reminder-action:focus-visible,
 .journal-history-button:focus-visible,
 .back-link:focus-visible,
 .archive-tab:focus-visible,
@@ -376,6 +379,7 @@ img {
 
 .panel__header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -403,6 +407,47 @@ img {
 
 .icon-button--soft {
   background: rgba(248, 200, 220, 0.24);
+}
+
+.task-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.finished-tasks-button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.finished-tasks-button:hover {
+  background: rgba(248, 200, 220, 0.28);
+  transform: translateY(-1px);
+}
+
+.finished-tasks-button .material-symbols-outlined {
+  font-size: 20px;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 600,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 .task-list,
@@ -617,6 +662,184 @@ img {
   font-weight: 700;
   line-height: 1.2;
   text-align: right;
+}
+
+.daily-reminder-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-reminder-panel::before {
+  position: absolute;
+  inset: 0 0 auto auto;
+  width: 180px;
+  height: 180px;
+  content: "";
+  border-radius: 0 32px 0 180px;
+  background: rgba(248, 200, 220, 0.16);
+  pointer-events: none;
+}
+
+.daily-reminder-list {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.daily-reminder-card {
+  position: relative;
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.64);
+  border-radius: 24px;
+  background: var(--surface-container-low);
+  box-shadow: 0 12px 24px rgba(121, 84, 101, 0.06);
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.daily-reminder-card:hover {
+  box-shadow: 0 16px 28px rgba(121, 84, 101, 0.12);
+  transform: translateY(-2px);
+}
+
+.daily-reminder-card__accent {
+  position: absolute;
+  inset: 0 0 auto auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 0 24px 0 64px;
+  opacity: 0.66;
+}
+
+.daily-reminder-card--primary .daily-reminder-card__accent {
+  background: var(--primary-container);
+}
+
+.daily-reminder-card--secondary .daily-reminder-card__accent {
+  background: var(--secondary-container);
+}
+
+.daily-reminder-card--tertiary .daily-reminder-card__accent {
+  background: var(--tertiary-container);
+}
+
+.daily-reminder-card__icon {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 14px;
+  font-size: 34px;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 600,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.daily-reminder-card--primary .daily-reminder-card__icon {
+  color: var(--primary);
+}
+
+.daily-reminder-card--secondary .daily-reminder-card__icon {
+  color: var(--secondary);
+}
+
+.daily-reminder-card--tertiary .daily-reminder-card__icon {
+  color: var(--tertiary);
+}
+
+.daily-reminder-card__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.daily-reminder-card h3 {
+  margin: 0;
+  color: var(--on-surface);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.daily-reminder-card p {
+  margin: 0;
+  color: var(--on-surface-variant);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.daily-reminder-action {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 18px;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.daily-reminder-action .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.daily-reminder-card--primary .daily-reminder-action {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+
+.daily-reminder-card--primary .daily-reminder-action:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.daily-reminder-card--secondary .daily-reminder-action {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+
+.daily-reminder-card--secondary .daily-reminder-action:hover {
+  background: var(--secondary);
+  color: var(--on-secondary);
+}
+
+.daily-reminder-card--tertiary .daily-reminder-action {
+  background: var(--tertiary-container);
+  color: var(--on-tertiary-container);
+}
+
+.daily-reminder-card--tertiary .daily-reminder-action:hover {
+  background: var(--tertiary);
+  color: var(--on-tertiary);
+}
+
+.daily-reminder-action:hover {
+  transform: translateY(-1px);
 }
 
 .milestone-panel {
@@ -929,6 +1152,198 @@ img {
 .notes-modal__save:hover {
   background: #684657;
   box-shadow: 0 14px 28px rgba(121, 84, 101, 0.24);
+  transform: translateY(-1px);
+}
+
+.finished-tasks-modal {
+  display: flex;
+  width: min(100%, 672px);
+  max-height: calc(100vh - 40px);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 32px;
+  background: rgba(255, 247, 255, 0.92);
+  box-shadow: 0 24px 64px rgba(248, 200, 220, 0.38);
+  backdrop-filter: blur(18px);
+}
+
+.finished-tasks-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px;
+  border-bottom: 1px solid rgba(232, 224, 235, 0.72);
+  background: rgba(255, 247, 255, 0.58);
+}
+
+.finished-tasks-modal__title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.finished-tasks-modal__icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--secondary-container);
+  color: var(--secondary);
+  font-size: 22px;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 600,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.finished-tasks-modal h2 {
+  margin: 0;
+  color: var(--on-surface);
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.finished-tasks-modal__title p {
+  margin: 2px 0 0;
+  color: var(--on-surface-variant);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.finished-tasks-modal__close {
+  flex: 0 0 auto;
+  color: var(--on-surface-variant);
+}
+
+.finished-task-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding: 24px;
+  background: rgba(250, 241, 252, 0.44);
+}
+
+.finished-task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(210, 195, 199, 0.42);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.64);
+  opacity: 0.82;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.finished-task-item:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.finished-task-item__check {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--secondary);
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 600,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.finished-task-item__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.finished-task-item__main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.finished-task-item h3 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--on-surface-variant);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: line-through;
+  text-decoration-color: var(--outline-variant);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.finished-task-item__main > span {
+  flex: 0 0 auto;
+  color: var(--outline);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.finished-task-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.finished-task-tags span {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--surface-variant);
+  color: var(--on-surface-variant);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.finished-tasks-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(232, 224, 235, 0.72);
+  background: rgba(255, 247, 255, 0.58);
+}
+
+.finished-tasks-modal__footer button {
+  min-height: 40px;
+  padding: 8px 22px;
+  cursor: pointer;
+  border-radius: 999px;
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.finished-tasks-modal__footer button:hover {
+  background: var(--secondary);
+  color: var(--on-secondary);
   transform: translateY(-1px);
 }
 
@@ -2733,8 +3148,16 @@ img {
 }
 
 @media (min-width: 640px) {
-  .roadmap-list {
+  .roadmap-list,
+  .daily-reminder-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .finished-task-item__main {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
   }
 
   .archive-toolbar {

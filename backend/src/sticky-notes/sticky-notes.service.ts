@@ -1,26 +1,46 @@
 import { Injectable } from '@nestjs/common';
+import { CurrentUserService } from '../current-user/current-user.service';
 import { CreateStickyNoteDto } from './dto/create-sticky-note.dto';
 import { UpdateStickyNoteDto } from './dto/update-sticky-note.dto';
 
 @Injectable()
 export class StickyNotesService {
-  create(createStickyNoteDto: CreateStickyNoteDto) {
+  constructor(private readonly currentUserService: CurrentUserService) {}
+
+  async create(createStickyNoteDto: CreateStickyNoteDto) {
+    const currentUserId = await this.currentUserService.getCurrentUserId();
+
+    void currentUserId;
+    void createStickyNoteDto;
     return 'This action adds a new stickyNote';
   }
 
-  findAll() {
+  async findAll() {
+    const currentUserId = await this.currentUserService.getCurrentUserId();
+
+    void currentUserId;
     return `This action returns all stickyNotes`;
   }
 
-  findOne(id: number) {
+  async findOne(id: string) {
+    const currentUserId = await this.currentUserService.getCurrentUserId();
+
+    void currentUserId;
     return `This action returns a #${id} stickyNote`;
   }
 
-  update(id: number, updateStickyNoteDto: UpdateStickyNoteDto) {
+  async update(id: string, updateStickyNoteDto: UpdateStickyNoteDto) {
+    const currentUserId = await this.currentUserService.getCurrentUserId();
+
+    void currentUserId;
+    void updateStickyNoteDto;
     return `This action updates a #${id} stickyNote`;
   }
 
-  remove(id: number) {
+  async remove(id: string) {
+    const currentUserId = await this.currentUserService.getCurrentUserId();
+
+    void currentUserId;
     return `This action removes a #${id} stickyNote`;
   }
 }

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CurrentUserService } from '../current-user/current-user.service';
 import { MoodService } from './mood.service';
 
 describe('MoodService', () => {
@@ -6,7 +7,15 @@ describe('MoodService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [MoodService],
+      providers: [
+        MoodService,
+        {
+          provide: CurrentUserService,
+          useValue: {
+            getCurrentUserId: jest.fn().mockResolvedValue('user-id'),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<MoodService>(MoodService);

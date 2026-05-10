@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CurrentUserService } from '../current-user/current-user.service';
 import { StickyNotesService } from './sticky-notes.service';
 
 describe('StickyNotesService', () => {
@@ -6,7 +7,15 @@ describe('StickyNotesService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [StickyNotesService],
+      providers: [
+        StickyNotesService,
+        {
+          provide: CurrentUserService,
+          useValue: {
+            getCurrentUserId: jest.fn().mockResolvedValue('user-id'),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<StickyNotesService>(StickyNotesService);

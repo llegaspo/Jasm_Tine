@@ -16,9 +16,17 @@
       <section class="panel glass-card" aria-labelledby="priority-tasks-heading">
         <header class="panel__header">
           <h2 id="priority-tasks-heading">Priority Tasks</h2>
-          <button class="icon-button icon-button--soft" type="button" aria-label="Add priority task">
-            <span class="material-symbols-outlined" aria-hidden="true">add</span>
-          </button>
+
+          <div class="task-header-actions">
+            <button class="finished-tasks-button" type="button" (click)="openFinishedTasksModal()">
+              <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+              <span>View Finished Tasks</span>
+            </button>
+
+            <button class="icon-button icon-button--soft" type="button" aria-label="Add priority task">
+              <span class="material-symbols-outlined" aria-hidden="true">add</span>
+            </button>
+          </div>
         </header>
 
         <ul class="task-list" aria-label="Priority tasks">
@@ -56,37 +64,33 @@
         </ul>
       </section>
 
-      <section class="panel glass-card" aria-labelledby="roadmap-heading">
+      <section class="panel glass-card daily-reminder-panel" aria-labelledby="daily-reminder-heading">
         <header class="panel__header panel__header--plain">
-          <h2 id="roadmap-heading">Upcoming Features Roadmap</h2>
+          <h2 id="daily-reminder-heading">Daily Well-being Tracker</h2>
         </header>
 
-        <ul class="roadmap-list" aria-label="Upcoming features roadmap">
-          @for (feature of roadmapFeatures; track feature.name) {
+        <ul class="daily-reminder-list" aria-label="Daily well-being reminders">
+          @for (reminder of dailyReminders; track reminder.title) {
             <li
-              class="roadmap-card"
-              [class.roadmap-card--primary]="feature.tone === 'primary'"
-              [class.roadmap-card--secondary]="feature.tone === 'secondary'"
-              [class.roadmap-card--tertiary]="feature.tone === 'tertiary'"
+              class="daily-reminder-card"
+              [class.daily-reminder-card--primary]="reminder.tone === 'primary'"
+              [class.daily-reminder-card--secondary]="reminder.tone === 'secondary'"
+              [class.daily-reminder-card--tertiary]="reminder.tone === 'tertiary'"
             >
-              <span class="roadmap-card__accent" aria-hidden="true"></span>
-              <span class="material-symbols-outlined roadmap-card__icon" aria-hidden="true">
-                {{ feature.icon }}
+              <span class="daily-reminder-card__accent" aria-hidden="true"></span>
+              <span class="material-symbols-outlined daily-reminder-card__icon" aria-hidden="true">
+                {{ reminder.icon }}
               </span>
-              <h3>{{ feature.name }}</h3>
 
-              <div
-                class="progress"
-                role="progressbar"
-                [attr.aria-valuenow]="feature.progress"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                [attr.aria-label]="feature.name + ' progress'"
-              >
-                <span [style.width.%]="feature.progress"></span>
+              <div class="daily-reminder-card__body">
+                <h3>{{ reminder.title }}</h3>
+                <p>{{ reminder.description }}</p>
               </div>
 
-              <p>{{ feature.progress }}%</p>
+              <button class="daily-reminder-action" type="button">
+                <span class="material-symbols-outlined" aria-hidden="true">{{ reminder.actionIcon }}</span>
+                <span>{{ reminder.action }}</span>
+              </button>
             </li>
           }
         </ul>
@@ -181,6 +185,67 @@
       <footer class="notes-modal__actions">
         <button class="notes-modal__cancel" type="button" (click)="closeNotesModal()">Cancel</button>
         <button class="notes-modal__save" type="button" (click)="saveNotes()">Save Changes</button>
+      </footer>
+    </section>
+  </div>
+}
+
+@if (isFinishedTasksModalOpen()) {
+  <div class="modal-backdrop" role="presentation" (click)="closeFinishedTasksModal()">
+    <section
+      class="finished-tasks-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="finished-tasks-heading"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="finished-tasks-modal__header">
+        <div class="finished-tasks-modal__title">
+          <span class="finished-tasks-modal__icon material-symbols-outlined" aria-hidden="true">
+            task_alt
+          </span>
+
+          <div>
+            <h2 id="finished-tasks-heading">Finished Tasks</h2>
+            <p>A record of your recent accomplishments.</p>
+          </div>
+        </div>
+
+        <button
+          class="icon-button finished-tasks-modal__close"
+          type="button"
+          aria-label="Close finished tasks"
+          (click)="closeFinishedTasksModal()"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </header>
+
+      <div class="finished-task-list" aria-label="Finished task history">
+        @for (task of finishedTasks; track task.id) {
+          <article class="finished-task-item">
+            <span class="material-symbols-outlined finished-task-item__check" aria-hidden="true">
+              check_circle
+            </span>
+
+            <div class="finished-task-item__body">
+              <div class="finished-task-item__main">
+                <h3>{{ task.title }}</h3>
+                <span>{{ task.completedOn }}</span>
+              </div>
+
+              <div class="finished-task-tags" aria-label="Task tags">
+                @for (tag of task.tags; track tag) {
+                  <span>{{ tag }}</span>
+                }
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+
+      <footer class="finished-tasks-modal__footer">
+        <button type="button" (click)="closeFinishedTasksModal()">Close History</button>
       </footer>
     </section>
   </div>

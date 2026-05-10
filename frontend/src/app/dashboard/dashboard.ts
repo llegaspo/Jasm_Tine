@@ -1,7 +1,7 @@
 import { Component, HostListener, computed, signal } from '@angular/core';
 
 type BadgeTone = 'urgent' | 'high';
-type FeatureTone = 'primary' | 'secondary' | 'tertiary';
+type AccentTone = 'primary' | 'secondary' | 'tertiary';
 
 interface PriorityTask {
   readonly id: number;
@@ -13,22 +13,31 @@ interface PriorityTask {
   };
 }
 
-interface RoadmapFeature {
-  readonly name: string;
+interface DailyReminder {
+  readonly title: string;
+  readonly description: string;
   readonly icon: string;
-  readonly progress: number;
-  readonly tone: FeatureTone;
+  readonly action: string;
+  readonly actionIcon: string;
+  readonly tone: AccentTone;
 }
 
 interface Milestone {
   readonly name: string;
   readonly daysLeft: number;
-  readonly tone: FeatureTone;
+  readonly tone: AccentTone;
 }
 
 interface Note {
   readonly id: number;
   readonly text: string;
+}
+
+interface FinishedTask {
+  readonly id: number;
+  readonly title: string;
+  readonly completedOn: string;
+  readonly tags: readonly string[];
 }
 
 @Component({
@@ -61,10 +70,31 @@ export class Dashboard {
     },
   ];
 
-  protected readonly roadmapFeatures: readonly RoadmapFeature[] = [
-    { name: 'Journal & Diary', icon: 'auto_stories', progress: 75, tone: 'primary' },
-    { name: 'Cycle Tracker', icon: 'calendar_month', progress: 40, tone: 'tertiary' },
-    { name: 'Mood Tracker', icon: 'mood', progress: 15, tone: 'secondary' },
+  protected readonly dailyReminders: readonly DailyReminder[] = [
+    {
+      title: 'Drink Water',
+      description: 'Stay hydrated through your focus blocks.',
+      icon: 'water_drop',
+      action: '250ml',
+      actionIcon: 'add',
+      tone: 'primary',
+    },
+    {
+      title: 'Stretch Break',
+      description: 'Release tension from your shoulders.',
+      icon: 'self_improvement',
+      action: 'Mark Done',
+      actionIcon: 'check',
+      tone: 'tertiary',
+    },
+    {
+      title: 'Mindful Moment',
+      description: 'Take three slow, grounding breaths.',
+      icon: 'spa',
+      action: 'Mark Done',
+      actionIcon: 'check',
+      tone: 'secondary',
+    },
   ];
 
   protected readonly milestones: readonly Milestone[] = [
@@ -77,14 +107,54 @@ export class Dashboard {
     { id: 2, text: 'Send thank you card to the packaging supplier.' },
     { id: 3, text: "Breathe. You're doing great." },
   ]);
+  protected readonly finishedTasks: readonly FinishedTask[] = [
+    {
+      id: 1,
+      title: 'Finalize Q3 Wellness Report',
+      completedOn: 'Completed Oct 24',
+      tags: ['Urgent', 'Analytics'],
+    },
+    {
+      id: 2,
+      title: 'Update Team Roster & Permissions',
+      completedOn: 'Completed Oct 22',
+      tags: ['High', 'Admin'],
+    },
+    {
+      id: 3,
+      title: 'Review Vendor Proposals for Retreat',
+      completedOn: 'Completed Oct 20',
+      tags: ['Medium'],
+    },
+    {
+      id: 4,
+      title: 'Draft October Newsletter Content',
+      completedOn: 'Completed Oct 18',
+      tags: ['Low', 'Marketing'],
+    },
+  ];
   protected readonly isNotesModalOpen = signal(false);
+  protected readonly isFinishedTasksModalOpen = signal(false);
   protected readonly notesDraft = signal('');
 
   @HostListener('document:keydown.escape')
-  protected closeNotesModalFromKeyboard(): void {
+  protected closeOpenModalFromKeyboard(): void {
+    if (this.isFinishedTasksModalOpen()) {
+      this.closeFinishedTasksModal();
+      return;
+    }
+
     if (this.isNotesModalOpen()) {
       this.closeNotesModal();
     }
+  }
+
+  protected openFinishedTasksModal(): void {
+    this.isFinishedTasksModalOpen.set(true);
+  }
+
+  protected closeFinishedTasksModal(): void {
+    this.isFinishedTasksModalOpen.set(false);
   }
 
   protected openNotesModal(): void {

@@ -6,9 +6,19 @@ import { PeriodModule } from './period/period.module';
 import { MoodModule } from './mood/mood.module';
 import { TasksModule } from './tasks/tasks.module';
 import { StickyNotesModule } from './sticky-notes/sticky-notes.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { CurrentUserModule } from './current-user/current-user.module';
 
 @Module({
-  imports: [JournalModule, PeriodModule, MoodModule, TasksModule, StickyNotesModule],
+  imports: [
+    PrismaModule,
+    CurrentUserModule,
+    JournalModule,
+    PeriodModule,
+    MoodModule,
+    TasksModule,
+    StickyNotesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
