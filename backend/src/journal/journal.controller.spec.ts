@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CurrentUserService } from '../current-user/current-user.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { JournalController } from './journal.controller';
 import { JournalService } from './journal.service';
 
@@ -11,6 +12,10 @@ describe('JournalController', () => {
       controllers: [JournalController],
       providers: [
         JournalService,
+        {
+          provide: PrismaService,
+          useValue: {},
+        },
         {
           provide: CurrentUserService,
           useValue: {
