@@ -1,15 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
+  Controller,
+  Delete,
+  Get,
   Patch,
   Param,
-  Delete,
+  Post,
 } from '@nestjs/common';
+import type { IdParam } from '../common/validation/zod-schemas';
+import { idParamSchema } from '../common/validation/zod-schemas';
+import { zodPipe } from '../common/validation/zod-validation.pipe';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpdateTaskDto, updateTaskSchema } from './dto/update-task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -31,8 +34,11 @@ export class TasksController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.tasksService.update(id, updateTaskDto);
+  update(
+    @Param(zodPipe(idParamSchema)) params: IdParam,
+    @Body(zodPipe(updateTaskSchema)) updateTaskDto: UpdateTaskDto,
+  ) {
+    return this.tasksService.update(params.id, updateTaskDto);
   }
 
   @Delete(':id')

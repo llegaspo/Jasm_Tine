@@ -1,18 +1,20 @@
 import { z } from 'zod';
 import { STATUS, Prisma } from '@prisma/client';
-import { zDate, zDecimal } from '../../common/zDecimal';
+import { zDateString, zDecimal } from '../../common/validation/zod-schemas';
 
-export const createTaskSchema = z.object({
-  title: z.string(),
-  description: z.string().optional(),
-  status: z.enum(STATUS).optional(),
-  priority: z.int().optional(),
-  category: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  sortOrder: zDecimal().optional(),
-  dueDate: zDate.optional(),
-  scheduledDate: zDate.optional(),
-});
+export const createTaskSchema = z
+  .object({
+    title: z.string().trim().min(1),
+    description: z.string().trim().min(1).optional(),
+    status: z.enum(STATUS).optional(),
+    priority: z.int().optional(),
+    category: z.string().trim().min(1).optional(),
+    tags: z.array(z.string().trim().min(1)).optional(),
+    sortOrder: zDecimal().optional(),
+    dueDate: zDateString.optional(),
+    scheduledDate: zDateString.optional(),
+  })
+  .strict();
 
 export class CreateTaskDto {
   title: string;
