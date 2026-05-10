@@ -8,6 +8,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { StickyNotesModule } from './sticky-notes/sticky-notes.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CurrentUserModule } from './current-user/current-user.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CurrentUserModule } from './current-user/current-user.module';
     MoodModule,
     TasksModule,
     StickyNotesModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -7,7 +7,7 @@ export const createTaskSchema = z
     title: z.string().trim().min(1),
     description: z.string().trim().min(1).optional(),
     status: z.enum(STATUS).optional(),
-    priority: z.int().optional(),
+    priority: z.number().int().optional(),
     category: z.string().trim().min(1).optional(),
     tags: z.array(z.string().trim().min(1)).optional(),
     sortOrder: zDecimal().optional(),

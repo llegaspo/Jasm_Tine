@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CurrentUserService } from '../current-user/current-user.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
 
@@ -11,6 +12,10 @@ describe('TasksController', () => {
       controllers: [TasksController],
       providers: [
         TasksService,
+        {
+          provide: PrismaService,
+          useValue: {},
+        },
         {
           provide: CurrentUserService,
           useValue: {
