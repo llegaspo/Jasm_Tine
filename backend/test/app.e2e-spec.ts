@@ -1,13 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { App } from 'supertest/types';
 import { HttpExceptionFilter } from './../src/common/filters/http-exception.filter';
 import { AppModule } from './../src/app.module';
 import { PrismaService } from './../src/prisma/prisma.service';
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication<App>;
+  let app: INestApplication;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -33,14 +32,14 @@ describe('AppController (e2e)', () => {
   });
 
   it('/api (GET)', () => {
-    return request(app.getHttpServer())
+    return request(app.getHttpAdapter().getInstance())
       .get('/api')
       .expect(200)
       .expect('Hello World!');
   });
 
   it('/api/tasks/:id (PATCH) returns 400 for invalid route params', () => {
-    return request(app.getHttpServer())
+    return request(app.getHttpAdapter().getInstance())
       .patch('/api/tasks/not-a-cuid')
       .send({ title: 'Valid title' })
       .expect(400)
@@ -58,7 +57,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('/api/tasks/:id (PATCH) returns 400 for invalid body', () => {
-    return request(app.getHttpServer())
+    return request(app.getHttpAdapter().getInstance())
       .patch('/api/tasks/c123456789012345678901234')
       .send({ priority: 'high' })
       .expect(400)
@@ -68,6 +67,22 @@ describe('AppController (e2e)', () => {
           expect.arrayContaining([
             expect.objectContaining({
               path: 'priority',
+            }),
+          ]),
+        );
+      });
+  });
+
+  it('/api/mood-logs (GET) returns 400 for invalid query', () => {
+    return request(app.getHttpAdapter().getInstance())
+      .get('/api/mood-logs?range=year')
+      .expect(400)
+      .expect(({ body }) => {
+        expect(body.message).toBe('Query params validation failed');
+        expect(body.errors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              path: 'range',
             }),
           ]),
         );

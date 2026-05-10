@@ -125,6 +125,23 @@ describe('MoodService', () => {
     });
   });
 
+  it('returns weekly mood logs', async () => {
+    prisma.moodLog.findMany.mockResolvedValue([]);
+
+    await service.findAll({ range: 'week' });
+
+    expect(prisma.moodLog.findMany).toHaveBeenCalledWith({
+      where: {
+        userId: currentUserId,
+        date: {
+          gte: new Date('2026-05-04T00:00:00.000Z'),
+          lte: new Date('2026-05-10T00:00:00.000Z'),
+        },
+      },
+      orderBy: [{ date: 'asc' }, { createdAt: 'asc' }],
+    });
+  });
+
   it('returns safe empty summary data', async () => {
     prisma.moodLog.findMany.mockResolvedValue([]);
 

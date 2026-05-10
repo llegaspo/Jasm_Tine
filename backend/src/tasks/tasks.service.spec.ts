@@ -133,6 +133,51 @@ describe('TasksService', () => {
     expect(prisma.task.update).not.toHaveBeenCalled();
   });
 
+  it('updates an owned task', async () => {
+    const existingTask = createTask();
+    const updatedTask = createTask({
+      title: 'Updated launch checklist',
+      priority: 2,
+    });
+    prisma.task.findFirst.mockResolvedValue(existingTask);
+    prisma.task.update.mockResolvedValue(updatedTask);
+
+    await expect(
+      service.update(existingTask.id, {
+        title: updatedTask.title,
+        priority: updatedTask.priority ?? undefined,
+      }),
+    ).resolves.toMatchObject({
+      id: existingTask.id,
+      title: updatedTask.title,
+      priority: updatedTask.priority,
+    });
+    expect(prisma.task.findFirst).toHaveBeenCalledWith({
+      where: { id: existingTask.id, userId: currentUserId },
+    });
+    expect(prisma.task.update).toHaveBeenCalledWith({
+      where: { id: existingTask.id },
+      data: {
+        title: updatedTask.title,
+        priority: updatedTask.priority,
+        completedAt: undefined,
+      },
+    });
+  });
+
+  it('deletes an owned task', async () => {
+    const task = createTask();
+    prisma.task.deleteMany.mockResolvedValue({ count: 1 });
+
+    await expect(service.remove(task.id)).resolves.toEqual({
+      id: task.id,
+      deleted: true,
+    });
+    expect(prisma.task.deleteMany).toHaveBeenCalledWith({
+      where: { id: task.id, userId: currentUserId },
+    });
+  });
+
   it('reorders multiple owned tasks in a transaction', async () => {
     const firstTask = createTask({ id: 'cmocktask000000000000000001' });
     const secondTask = createTask({
