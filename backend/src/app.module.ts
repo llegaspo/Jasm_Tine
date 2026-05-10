@@ -10,6 +10,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { CurrentUserModule } from './current-user/current-user.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { MilestonesModule } from './milestones/milestones.module';
+import { PomodoroModule } from './pomodoro/pomodoro.module';
+import { RemindersModule } from './reminders/reminders.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { MilestonesModule } from './milestones/milestones.module';
     StickyNotesModule,
     DashboardModule,
     MilestonesModule,
+    PomodoroModule,
+    RemindersModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
