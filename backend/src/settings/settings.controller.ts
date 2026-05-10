@@ -8,11 +8,26 @@ import {
   notificationKeyParamSchema,
   updateNotificationPreferenceSchema,
 } from './dto/update-notification-preference.dto';
+import type { UpdateProfileDto } from './dto/update-profile.dto';
+import { updateProfileSchema } from './dto/update-profile.dto';
 import { SettingsService } from './settings.service';
 
 @Controller('settings')
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
+
+  @Get('profile')
+  profile() {
+    return this.settingsService.profile();
+  }
+
+  @Patch('profile')
+  updateProfile(
+    @Body(zodPipe(updateProfileSchema))
+    body: UpdateProfileDto,
+  ) {
+    return this.settingsService.updateProfile(body);
+  }
 
   @Get('notifications')
   notifications() {

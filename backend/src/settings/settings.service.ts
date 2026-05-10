@@ -1,12 +1,23 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { type NotificationPreference } from '@prisma/client';
+import {
+  Prisma,
+  type NotificationPreference,
+  type User,
+  type UserProfile,
+} from '@prisma/client';
 import { CurrentUserService } from '../current-user/current-user.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateNotificationPreferenceDto } from './dto/update-notification-preference.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+
+type UserWithProfile = User & {
+  profile: UserProfile | null;
+};
 
 @Injectable()
 export class SettingsService {
@@ -14,6 +25,97 @@ export class SettingsService {
     private readonly prisma: PrismaService,
     private readonly currentUserService: CurrentUserService,
   ) {}
+
+  async profile() {
+    const currentUserId = await this.currentUserService.getCurrentUserId();
+    const user = await this.prisma.user.findUnique({
+      where: { id: currentUserId },
+      include: { profile: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Current user was not found');
+    }
+
+    return this.toProfileResponse(user);
+  }
+
+  async updateProfile(body: UpdateProfileDto) {
+    const currentUserId = await this.currentUserService.getCurrentUserId();
+
+    try {
+      const user = await this.prisma.$transaction(async (tx) => {
+        const existingUser = await tx.user.findUnique({
+          where: { id: currentUserId },
+          select: { id: true },
+        });
+
+        if (!existingUser) {
+          throw new NotFoundException('Current user was not found');
+        }
+
+        if (
+          body.firstName !== undefined ||
+          body.lastName !== undefined ||
+          body.email !== undefined ||
+          body.timezone !== undefined
+        ) {
+          await tx.user.update({
+            where: { id: currentUserId },
+            data: {
+              ...(body.firstName !== undefined
+                ? { firstName: body.firstName }
+                : {}),
+              ...(body.lastName !== undefined
+                ? { lastName: body.lastName }
+                : {}),
+              ...(body.email !== undefined ? { email: body.email } : {}),
+              ...(body.timezone !== undefined
+                ? { timezone: body.timezone }
+                : {}),
+            },
+          });
+        }
+
+        if (body.bio !== undefined || body.avatarUrl !== undefined) {
+          await tx.userProfile.upsert({
+            where: { userId: currentUserId },
+            update: {
+              ...(body.bio !== undefined ? { bio: body.bio } : {}),
+              ...(body.avatarUrl !== undefined
+                ? { avatarUrl: body.avatarUrl }
+                : {}),
+            },
+            create: {
+              userId: currentUserId,
+              bio: body.bio,
+              avatarUrl: body.avatarUrl,
+            },
+          });
+        }
+
+        return tx.user.findUnique({
+          where: { id: currentUserId },
+          include: { profile: true },
+        });
+      });
+
+      if (!user) {
+        throw new NotFoundException('Current user was not found');
+      }
+
+      return this.toProfileResponse(user);
+    } catch (error: unknown) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException('Email is already in use');
+      }
+
+      throw error;
+    }
+  }
 
   async notifications() {
     const currentUserId = await this.currentUserService.getCurrentUserId();
@@ -75,6 +177,22 @@ export class SettingsService {
       locked: preference.locked,
       createdAt: preference.createdAt.toISOString(),
       updatedAt: preference.updatedAt.toISOString(),
+    };
+  }
+
+  private toProfileResponse(user: UserWithProfile) {
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      timezone: user.timezone,
+      displayName: user.profile?.displayName ?? null,
+      bio: user.profile?.bio ?? null,
+      avatarUrl: user.profile?.avatarUrl ?? null,
+      currentFocus: user.profile?.currentFocus ?? null,
+      greetingName: user.profile?.displayName ?? user.firstName,
+      profileUpdatedAt: user.profile?.updatedAt.toISOString() ?? null,
     };
   }
 }
