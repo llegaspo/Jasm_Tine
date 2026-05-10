@@ -1,42 +1,46 @@
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { zodPipe } from '../common/validation/zod-validation.pipe';
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+  CreatePeriodDto,
+  createCycleEntrySchema,
+} from './dto/create-period.dto';
+import type {
+  CreateSymptomLogInput,
+  CycleSymptomQueryDto,
+} from './dto/update-period.dto';
+import {
+  createSymptomLogSchema,
+  cycleSymptomQuerySchema,
+} from './dto/update-period.dto';
 import { PeriodService } from './period.service';
-import { CreatePeriodDto } from './dto/create-period.dto';
-import { UpdatePeriodDto } from './dto/update-period.dto';
 
-@Controller('period')
+@Controller('cycle')
 export class PeriodController {
   constructor(private readonly periodService: PeriodService) {}
 
-  @Post()
-  create(@Body() createPeriodDto: CreatePeriodDto) {
-    return this.periodService.create(createPeriodDto);
+  @Post('entries')
+  saveEntry(
+    @Body(zodPipe(createCycleEntrySchema)) createPeriodDto: CreatePeriodDto,
+  ) {
+    return this.periodService.saveEntry(createPeriodDto);
   }
 
-  @Get()
-  findAll() {
-    return this.periodService.findAll();
+  @Get('summary')
+  summary() {
+    return this.periodService.summary();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.periodService.findOne(id);
+  @Post('symptoms')
+  saveSymptom(
+    @Body(zodPipe(createSymptomLogSchema)) symptomDto: CreateSymptomLogInput,
+  ) {
+    return this.periodService.saveSymptom(symptomDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePeriodDto: UpdatePeriodDto) {
-    return this.periodService.update(id, updatePeriodDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.periodService.remove(id);
+  @Get('symptoms')
+  symptoms(
+    @Query(zodPipe(cycleSymptomQuerySchema)) query: CycleSymptomQueryDto,
+  ) {
+    return this.periodService.findSymptoms(query);
   }
 }

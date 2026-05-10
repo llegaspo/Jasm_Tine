@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CurrentUserService } from '../current-user/current-user.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { MoodController } from './mood.controller';
 import { MoodService } from './mood.service';
 
@@ -11,6 +12,10 @@ describe('MoodController', () => {
       controllers: [MoodController],
       providers: [
         MoodService,
+        {
+          provide: PrismaService,
+          useValue: {},
+        },
         {
           provide: CurrentUserService,
           useValue: {

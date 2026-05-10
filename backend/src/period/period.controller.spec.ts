@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CurrentUserService } from '../current-user/current-user.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { PeriodController } from './period.controller';
 import { PeriodService } from './period.service';
 
@@ -11,6 +12,10 @@ describe('PeriodController', () => {
       controllers: [PeriodController],
       providers: [
         PeriodService,
+        {
+          provide: PrismaService,
+          useValue: {},
+        },
         {
           provide: CurrentUserService,
           useValue: {

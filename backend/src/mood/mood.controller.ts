@@ -1,42 +1,26 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { zodPipe } from '../common/validation/zod-validation.pipe';
 import { MoodService } from './mood.service';
-import { CreateMoodDto } from './dto/create-mood.dto';
-import { UpdateMoodDto } from './dto/update-mood.dto';
+import { CreateMoodDto, createMoodLogSchema } from './dto/create-mood.dto';
+import type { MoodLogQueryDto } from './dto/update-mood.dto';
+import { moodLogQuerySchema } from './dto/update-mood.dto';
 
-@Controller('mood')
+@Controller('mood-logs')
 export class MoodController {
   constructor(private readonly moodService: MoodService) {}
 
   @Post()
-  create(@Body() createMoodDto: CreateMoodDto) {
-    return this.moodService.create(createMoodDto);
+  save(@Body(zodPipe(createMoodLogSchema)) createMoodDto: CreateMoodDto) {
+    return this.moodService.save(createMoodDto);
   }
 
   @Get()
-  findAll() {
-    return this.moodService.findAll();
+  findAll(@Query(zodPipe(moodLogQuerySchema)) query: MoodLogQueryDto) {
+    return this.moodService.findAll(query);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.moodService.findOne(id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMoodDto: UpdateMoodDto) {
-    return this.moodService.update(id, updateMoodDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.moodService.remove(id);
+  @Get('summary')
+  summary(@Query(zodPipe(moodLogQuerySchema)) query: MoodLogQueryDto) {
+    return this.moodService.summary(query);
   }
 }
