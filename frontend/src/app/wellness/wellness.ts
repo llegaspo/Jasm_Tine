@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 type MoodTone = 'tertiary' | 'secondary' | 'primary' | 'surface';
 
@@ -28,6 +29,7 @@ interface MoodPattern {
 
 @Component({
   selector: 'app-wellness',
+  imports: [RouterLink],
   templateUrl: './wellness.html',
 })
 export class Wellness {

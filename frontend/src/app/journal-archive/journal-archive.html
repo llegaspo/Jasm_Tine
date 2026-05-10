@@ -1,0 +1,63 @@
+<div class="journal-archive-content">
+  <header class="journal-archive-header">
+    <a class="back-link" routerLink="/wellness">
+      <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+      <span>Back to Journal</span>
+    </a>
+
+    <div>
+      <h1>Journal Archive</h1>
+      <p>Revisit your past thoughts, reflections, and moments of clarity.</p>
+    </div>
+  </header>
+
+  <section class="archive-toolbar" aria-label="Journal archive filters">
+    <div class="archive-tabs" role="group" aria-label="Date range">
+      <button class="archive-tab archive-tab--active" type="button">This Month</button>
+      <button class="archive-tab" type="button">Last Month</button>
+      <button class="archive-tab archive-tab--menu" type="button">
+        <span>2023</span>
+        <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+      </button>
+    </div>
+
+    <button class="archive-filter" type="button">
+      <span class="material-symbols-outlined" aria-hidden="true">mood</span>
+      <span>Filter by Mood</span>
+    </button>
+  </section>
+
+  <main class="journal-entry-grid" aria-label="Past journal entries">
+    @for (entry of entries; track entry.date) {
+      <article class="journal-entry-card glass-card" [class.journal-entry-card--featured]="entry.featured">
+        @if (entry.featured && entry.imageUrl) {
+          <img class="journal-entry-card__image" [src]="entry.imageUrl" alt="" aria-hidden="true" />
+          <span class="journal-entry-card__overlay" aria-hidden="true"></span>
+        }
+
+        <div class="journal-entry-card__content">
+          <div class="journal-entry-card__meta">
+            <span class="journal-entry-card__date">
+              <span class="material-symbols-outlined" aria-hidden="true">calendar_today</span>
+              {{ entry.date }}
+            </span>
+            <span
+              class="material-symbols-outlined journal-entry-card__mood"
+              [attr.title]="entry.moodLabel"
+              [attr.aria-label]="entry.moodLabel"
+            >
+              {{ entry.mood }}
+            </span>
+          </div>
+
+          <h2>{{ entry.title }}</h2>
+          <p>{{ entry.excerpt }}</p>
+        </div>
+      </article>
+    }
+  </main>
+
+  <div class="archive-load-more">
+    <button type="button">Load Older Entries</button>
+  </div>
+</div>
