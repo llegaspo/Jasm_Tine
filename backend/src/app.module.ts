@@ -9,6 +9,7 @@ import { StickyNotesModule } from './sticky-notes/sticky-notes.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CurrentUserModule } from './current-user/current-user.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { MilestonesModule } from './milestones/milestones.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     TasksModule,
     StickyNotesModule,
     DashboardModule,
+    MilestonesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

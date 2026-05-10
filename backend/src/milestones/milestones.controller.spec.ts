@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CurrentUserService } from '../current-user/current-user.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { StickyNotesController } from './sticky-notes.controller';
-import { StickyNotesService } from './sticky-notes.service';
+import { MilestonesController } from './milestones.controller';
+import { MilestonesService } from './milestones.service';
 
-describe('StickyNotesController', () => {
-  let controller: StickyNotesController;
+describe('MilestonesController', () => {
+  let controller: MilestonesController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [StickyNotesController],
+      controllers: [MilestonesController],
       providers: [
-        StickyNotesService,
+        MilestonesService,
         {
           provide: PrismaService,
           useValue: {},
@@ -25,7 +25,7 @@ describe('StickyNotesController', () => {
       ],
     }).compile();
 
-    controller = module.get<StickyNotesController>(StickyNotesController);
+    controller = module.get<MilestonesController>(MilestonesController);
   });
 
   it('should be defined', () => {
