@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, HostListener, computed, signal } from '@angular/core';
 
 type BadgeTone = 'urgent' | 'high';
 type FeatureTone = 'primary' | 'secondary' | 'tertiary';
@@ -72,9 +72,42 @@ export class Dashboard {
     { name: 'Q1 Review Prep', daysLeft: 12, tone: 'tertiary' },
   ];
 
-  protected readonly notes: readonly Note[] = [
+  protected readonly notes = signal<readonly Note[]>([
     { id: 1, text: "Don't forget to order more jasmine tea for the studio." },
     { id: 2, text: 'Send thank you card to the packaging supplier.' },
     { id: 3, text: "Breathe. You're doing great." },
-  ];
+  ]);
+  protected readonly isNotesModalOpen = signal(false);
+  protected readonly notesDraft = signal('');
+
+  @HostListener('document:keydown.escape')
+  protected closeNotesModalFromKeyboard(): void {
+    if (this.isNotesModalOpen()) {
+      this.closeNotesModal();
+    }
+  }
+
+  protected openNotesModal(): void {
+    this.notesDraft.set(this.notes().map((note) => note.text).join('\n'));
+    this.isNotesModalOpen.set(true);
+  }
+
+  protected closeNotesModal(): void {
+    this.isNotesModalOpen.set(false);
+  }
+
+  protected updateNotesDraft(event: Event): void {
+    this.notesDraft.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  protected saveNotes(): void {
+    const updatedNotes = this.notesDraft()
+      .split('\n')
+      .map((note) => note.trim())
+      .filter(Boolean)
+      .map((text, index) => ({ id: index + 1, text }));
+
+    this.notes.set(updatedNotes);
+    this.closeNotesModal();
+  }
 }
