@@ -28,7 +28,7 @@
   </section>
 
   <main class="journal-entry-grid" aria-label="Past journal entries">
-    @for (entry of entries; track entry.date) {
+    @for (entry of entries(); track entry.id) {
       <article class="journal-entry-card glass-card" [class.journal-entry-card--featured]="entry.featured">
         @if (entry.featured && entry.imageUrl) {
           <img class="journal-entry-card__image" [src]="entry.imageUrl" alt="" aria-hidden="true" />

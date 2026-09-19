@@ -13,7 +13,7 @@
 
       <button class="avatar-button" type="button" aria-label="Open user profile">
         <img
-          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80"
+          [src]="avatarUrl()"
           alt="Jasmine profile portrait"
           width="40"
           height="40"
@@ -42,10 +42,38 @@
       }
     </nav>
 
-    <button class="primary-action" type="button">New Project</button>
+    <div class="sidebar__footer">
+      <button class="primary-action" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">add</span>
+        <span>New Project</span>
+      </button>
+
+      <div class="sidebar-affirmation" aria-label="Daily affirmation">
+        <span aria-hidden="true"></span>
+        <p>“A more intentional you, a brighter tomorrow.”</p>
+        <span class="material-symbols-outlined" aria-hidden="true">favorite</span>
+      </div>
+    </div>
   </aside>
 
   <main id="main-content" class="dashboard-main">
+    <header class="utility-bar" aria-label="Dashboard utilities">
+      <a class="pomodoro-status" routerLink="/pomodoro">
+        <span class="material-symbols-outlined" aria-hidden="true">timer</span>
+        <span>Pomodoro · Focus</span>
+      </a>
+
+      <span class="utility-divider" aria-hidden="true"></span>
+      <time>{{ currentDate }}</time>
+      <span class="utility-divider" aria-hidden="true"></span>
+
+      <a class="profile-menu" routerLink="/settings" aria-label="Open profile settings">
+        <img [src]="avatarUrl()" alt="" width="36" height="36" />
+        <span>{{ profileName() }}</span>
+        <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+      </a>
+    </header>
+
     <router-outlet />
   </main>
 

@@ -1,4 +1,5 @@
-import { Component, OnDestroy, computed, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { ApiPomodoroSession, ApiService, PomodoroMode } from '../core/api.service';
 
 type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
 
@@ -14,7 +15,7 @@ interface Atmosphere {
 }
 
 interface SessionRecord {
-  readonly id: number;
+  readonly id: string;
   readonly title: string;
   readonly meta: string;
 }
@@ -23,9 +24,10 @@ interface SessionRecord {
   selector: 'app-pomodoro',
   templateUrl: './pomodoro.html',
 })
-export class Pomodoro implements OnDestroy {
+export class Pomodoro implements OnInit, OnDestroy {
+  private readonly api = inject(ApiService);
   private intervalId: ReturnType<typeof setInterval> | null = null;
-  private nextSessionId = 3;
+  private sessionStartedAt: Date | null = null;
 
   protected readonly modes: readonly TimerModeConfig[] = [
     { id: 'focus', label: 'Focus', minutes: 25 },
@@ -45,10 +47,7 @@ export class Pomodoro implements OnDestroy {
   protected readonly focusTask = signal('');
   protected readonly completedFocusSessions = signal(0);
   protected readonly selectedAtmosphere = signal('Gentle Rain');
-  protected readonly sessionHistory = signal<readonly SessionRecord[]>([
-    { id: 1, title: 'Design System Review', meta: '25 min - Completed' },
-    { id: 2, title: 'Client Email Drafts', meta: '15 min - Short Break' },
-  ]);
+  protected readonly sessionHistory = signal<readonly SessionRecord[]>([]);
 
   protected readonly activeMode = computed(() => this.configFor(this.currentMode()));
   protected readonly durationSeconds = computed(() => this.minutesToSeconds(this.activeMode().minutes));
@@ -65,6 +64,10 @@ export class Pomodoro implements OnDestroy {
     this.isRunning() ? 'Session in progress' : 'Ready when you are',
   );
 
+  ngOnInit(): void {
+    this.loadPomodoroToday();
+  }
+
   ngOnDestroy(): void {
     this.stopTimer();
   }
@@ -76,6 +79,7 @@ export class Pomodoro implements OnDestroy {
   protected selectMode(mode: TimerMode): void {
     this.currentMode.set(mode);
     this.secondsRemaining.set(this.minutesToSeconds(this.configFor(mode).minutes));
+    this.sessionStartedAt = null;
     this.stopTimer();
   }
 
@@ -86,6 +90,7 @@ export class Pomodoro implements OnDestroy {
     }
 
     this.isRunning.set(true);
+    this.sessionStartedAt ??= new Date();
     this.intervalId = setInterval(() => {
       const seconds = this.secondsRemaining();
 
@@ -100,10 +105,12 @@ export class Pomodoro implements OnDestroy {
 
   protected resetTimer(): void {
     this.secondsRemaining.set(this.durationSeconds());
+    this.sessionStartedAt = null;
     this.stopTimer();
   }
 
   protected skipTimer(): void {
+    this.logCurrentSession(false, true);
     this.advanceMode();
   }
 
@@ -113,11 +120,11 @@ export class Pomodoro implements OnDestroy {
 
   private completeCurrentSession(): void {
     const finishedMode = this.activeMode();
+    this.logCurrentSession(true, false);
 
     if (finishedMode.id === 'focus') {
       const completedCount = this.completedFocusSessions() + 1;
       this.completedFocusSessions.set(completedCount);
-      this.addSessionRecord(finishedMode.minutes);
       this.currentMode.set(completedCount % 4 === 0 ? 'longBreak' : 'shortBreak');
     } else {
       this.currentMode.set('focus');
@@ -139,13 +146,8 @@ export class Pomodoro implements OnDestroy {
     this.stopTimer();
   }
 
-  private addSessionRecord(minutes: number): void {
-    const title = this.focusTask().trim() || 'Untitled Focus Session';
-    const record: SessionRecord = {
-      id: this.nextSessionId++,
-      title,
-      meta: `${minutes} min - Completed`,
-    };
+  private addSessionRecord(session: ApiPomodoroSession): void {
+    const record = this.toSessionRecord(session);
 
     this.sessionHistory.update((history) => [record, ...history].slice(0, 4));
   }
@@ -171,5 +173,54 @@ export class Pomodoro implements OnDestroy {
     const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
     const seconds = (totalSeconds % 60).toString().padStart(2, '0');
     return `${minutes}:${seconds}`;
+  }
+
+  private loadPomodoroToday(): void {
+    this.api.getPomodoroToday().subscribe((today) => {
+      this.completedFocusSessions.set(
+        today.sessions.filter((session) => session.completed && session.mode === 'FOCUS').length,
+      );
+      this.sessionHistory.set(today.sessions.slice(-4).reverse().map((session) => this.toSessionRecord(session)));
+    });
+  }
+
+  private logCurrentSession(completed: boolean, skipped: boolean): void {
+    const finishedMode = this.activeMode();
+    const startedAt = this.sessionStartedAt ?? new Date();
+    const endedAt = new Date();
+
+    this.api
+      .createPomodoroSession({
+        taskTitle: this.focusTask().trim() || undefined,
+        mode: this.toApiMode(finishedMode.id),
+        duration: finishedMode.minutes,
+        completed,
+        skipped,
+        atmosphere: this.selectedAtmosphere(),
+        startedAt: startedAt.toISOString(),
+        endedAt: endedAt.toISOString(),
+      })
+      .subscribe((session) => this.addSessionRecord(session));
+    this.sessionStartedAt = null;
+  }
+
+  private toApiMode(mode: TimerMode): PomodoroMode {
+    if (mode === 'shortBreak') {
+      return 'SHORT_BREAK';
+    }
+
+    if (mode === 'longBreak') {
+      return 'LONG_BREAK';
+    }
+
+    return 'FOCUS';
+  }
+
+  private toSessionRecord(session: ApiPomodoroSession): SessionRecord {
+    return {
+      id: session.id,
+      title: session.taskTitle,
+      meta: `${session.duration} min - ${session.skipped ? 'Skipped' : 'Completed'}`,
+    };
   }
 }

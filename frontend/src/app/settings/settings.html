@@ -13,7 +13,7 @@
       <div class="profile-settings">
         <div class="avatar-settings">
           <button class="avatar-upload" type="button" aria-label="Change profile photo">
-            <img [src]="avatarUrl" alt="Current profile portrait" width="128" height="128" />
+            <img [src]="avatarUrl()" alt="Current profile portrait" width="128" height="128" />
             <span>
               <span class="material-symbols-outlined" aria-hidden="true">photo_camera</span>
             </span>
@@ -30,18 +30,23 @@
             @for (field of profileFields; track field.id) {
               <label class="field" [class.field--full]="field.id === 'email'">
                 <span>{{ field.label }}</span>
-                <input [id]="field.id" [type]="field.type" [value]="field.value" />
+                <input
+                  [id]="field.id"
+                  [type]="field.type"
+                  [value]="profileFieldValue(field.id)"
+                  (input)="updateProfileField(field.id, $event)"
+                />
               </label>
             }
           </div>
 
           <label class="field field--full">
             <span>Bio</span>
-            <textarea rows="3">{{ bio }}</textarea>
+            <textarea rows="3" [value]="profileDraft().bio" (input)="updateBio($event)"></textarea>
           </label>
 
           <div class="settings-form__actions">
-            <button class="soft-action" type="button">Save Changes</button>
+            <button class="soft-action" type="button" (click)="saveProfile()">Save Changes</button>
           </div>
         </form>
       </div>
@@ -51,7 +56,7 @@
       <h2 id="notifications-heading">Notification Preferences</h2>
 
       <ul class="preference-list">
-        @for (preference of notificationPreferences; track preference.title) {
+        @for (preference of notificationPreferences(); track preference.key) {
           <li class="preference-item">
             <div>
               <h3>{{ preference.title }}</h3>
@@ -65,6 +70,7 @@
               [disabled]="preference.locked"
               [attr.aria-pressed]="preference.enabled"
               [attr.aria-label]="preference.title"
+              (click)="toggleNotification(preference)"
             >
               <span></span>
             </button>
